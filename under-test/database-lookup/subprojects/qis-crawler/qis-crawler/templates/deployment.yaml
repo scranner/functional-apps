@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qis-crawler.fullname" . }}
+  labels:
+    pythia.io/enabled: "true"
+{{ include "qis-crawler.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount.min }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "qis-crawler.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "qis-crawler.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        timstamp: "{{ date "20060102150405" .Release.Time }}"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      imagePullSecrets:
+        - name: gitlab-creds
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image }}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+          env:
+            - name: REDIS_URL
+              value: "{{ .Release.Name }}-redis-queue"
+            - name: QUEENS_INDEX_URL
+              value: "{{ .Release.Name }}-redis-search"
+            - name: CRAWL_DELAY
+              value: "{{ .Values.crawlDelay }}"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

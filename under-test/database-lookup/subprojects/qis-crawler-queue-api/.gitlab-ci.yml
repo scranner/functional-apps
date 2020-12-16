@@ -1,0 +1,48 @@
+stages:
+  - build
+  - test
+  - push-image
+  - deploy
+
+build-image:
+  image: docker:19.03.1-dind
+  stage: build
+  script: docker build . -t $CI_REGISTRY_IMAGE
+  tags:
+    - dindrunner02
+
+lint:
+  image: golang:1.13.3
+  stage: test
+  allow_failure: true
+  script:
+    - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.21.0
+    - golangci-lint run
+
+test:
+  image: golang:1.13.3
+  stage: test
+  script:
+    - go test
+
+push-image:
+  image: docker:19.03.1-dind
+  stage: push-image
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE
+  only:
+    - master
+  tags:
+    - dindrunner02
+
+deploy:
+  image: dtzar/helm-kubectl
+  stage: deploy
+  script:
+    - mkdir /root/.kube && touch /root/.kube/config
+    - echo $KUBER_CONFIG | base64 -d > /root/.kube/config
+    - cd $CI_PROJECT_NAME
+    - helm upgrade $CI_PROJECT_NAME . --namespace qis-project --wait
+  only:
+    - master

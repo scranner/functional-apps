@@ -1,0 +1,30 @@
+# Default values for calculator-api-facade.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount:
+  min: 1
+  max: 10
+
+image: jmccartney13/calculator-api-facade
+predictiveScaling: true
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  annotations: {
+    nginx.ingress.kubernetes.io/rewrite-target: "/graphql"
+  }
+  enabled: true
+  hosts:
+    - host: api.calculator-project.qpc.hal.davecutting.uk
+      paths: ["/*"]
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi

@@ -1,0 +1,27 @@
+# Default values for calculator-multiply.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount:
+  min: 1
+  max: 10
+
+image: jmccartney13/calculator-multiply
+predictiveScaling: true
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: multiply.calculator-project.qpc.hal.davecutting.uk
+      paths: ["/"]
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi

@@ -1,0 +1,24 @@
+# Default values for redis-search.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount:
+  max: 1
+  min: 1
+
+image: redislabs/redisearch
+
+service:
+  type: ClusterIP
+  port: 6379
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 256Mi

@@ -1,0 +1,7 @@
+FROM mhart/alpine-node:13
+
+WORKDIR /opt/smoke-tests/
+COPY package*.json ./
+RUN npm install
+COPY . ./
+ENTRYPOINT npm run smoke

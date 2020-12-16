@@ -1,0 +1,27 @@
+qis-crawler:
+  image: jmccartney13/qis-crawler
+  ingress:
+    enabled: false
+qis-index-ad-api:
+  image: jmccartney13/qis-index-ad-api
+  ingress:
+    enabled: false
+qis-index-ad-submission-api:
+  image: jmccartney13/qis-index-ad-submission-api
+  ingress:
+    ingress:
+      enabled: false
+qis-crawler-queue-api:
+  image: jmccartney13/qis-crawler-queue-api
+  ingress:
+    enabled: false
+qis-index-search-api:
+  image: jmccartney13/qis-index-search-api
+  ingress:
+    enabled: false
+redis-queue:
+  ingress:
+    enabled: false
+redis-search:
+  ingress:
+    enabled: false

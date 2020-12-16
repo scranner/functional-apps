@@ -1,0 +1,127 @@
+stages:
+  - build
+  - test
+  - push-image
+  - deploy
+  - verify-deploy
+
+cache:
+  paths:
+    - node_modules/
+
+install_deps:
+  image: node:13
+  stage: build
+  script: npm install
+  artifacts:
+    paths:
+      - node_modules/
+  except:
+    - schedules
+
+build-image:
+  image: docker:19.03.1-dind
+  stage: build
+  script: docker build . -t $CI_REGISTRY_IMAGE
+  tags:
+    - dindrunner02
+  except:
+    - schedules
+
+lint:
+  image: node:13
+  stage: test
+  script: npm run lint
+  artifacts:
+    paths:
+      - node_modules/
+  except:
+    - schedules
+
+test:
+  image: node:13
+  stage: test
+  script: npm run test
+  artifacts:
+    paths:
+      - node_modules/
+  except:
+    - schedules
+
+smoke-test:
+  stage: test
+  image: qmarketing/dind-docker-compose:18.09.5
+  tags:
+    - dindrunner02
+  script:
+    - cd api-facade-smoke-test
+    - docker-compose down || true
+    - docker-compose build api-under-test && docker-compose up -d api-under-test
+    - docker-compose build smoke-test && docker-compose run smoke-test
+    - docker-compose down
+  except:
+    - schedules
+
+smoke-lint:
+  stage: test
+  image: node:13
+  script:
+    - cd api-facade-smoke-test
+    - npm i
+    - npm run lint
+  except:
+    - schedules
+
+push-image:
+  image: docker:19.03.1-dind
+  stage: push-image
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE
+  only:
+    - master
+  tags:
+    - dindrunner02
+  except:
+    - schedules
+
+deploy:
+  image: dtzar/helm-kubectl
+  stage: deploy
+  script:
+    - mkdir /root/.kube && touch /root/.kube/config
+    - echo $KUBER_CONFIG | base64 -d > /root/.kube/config
+    - cd calculator-api-facade
+    - helm upgrade api-facade . --namespace calculator-project
+  only:
+    - master
+  except:
+    - schedules
+
+verify-deploy:
+  stage: verify-deploy
+  image: qmarketing/dind-docker-compose:18.09.5
+  tags:
+    - dindrunner02
+  script:
+    - cd api-facade-smoke-test
+    - docker-compose down || true
+    - docker-compose build verification-test && docker-compose run verification-test
+    - docker-compose down
+  only:
+    - master
+  except:
+    - schedules
+
+timing-test:
+  stage: verify-deploy
+  image: qmarketing/dind-docker-compose:18.09.5
+  tags:
+    - dindrunner02
+  script:
+    - cd api-facade-smoke-test
+    - docker-compose down || true
+    - docker-compose build monitoring-test && docker-compose run monitoring-test
+    - docker-compose down
+  only:
+    - schedules

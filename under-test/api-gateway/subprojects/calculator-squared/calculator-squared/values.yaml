@@ -1,0 +1,27 @@
+# Default values for calculator-squared.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount:
+  min: 1
+  max: 10
+
+image: jmccartney13/calculator-squared
+predictiveScaling: true
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: squared.calculator-project.qpc.hal.davecutting.uk
+      paths: ["/"]
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi

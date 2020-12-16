@@ -1,0 +1,27 @@
+# Default values for qis-crawler-queue-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount:
+  max: 5
+  min: 1
+
+image: registry.hal.davecutting.uk/jmccartney13/qis-crawler-queue-api
+predictiveScaling: true
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: queue-api.qis-project.qpc.hal.davecutting.uk
+      paths: ["/"]
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi

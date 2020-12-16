@@ -1,0 +1,28 @@
+apiVersion: v2
+name: api-gateway
+description: A Helm chart for Kubernetes
+
+type: application
+version: 0.1.0
+appVersion: 1.16.0
+
+
+dependencies:
+  - name: calculator-add
+    version: 0.1.0
+    repository: http://charts.scranner.co.uk
+  - name: calculator-api-facade
+    version: 0.1.0
+    repository: http://charts.scranner.co.uk
+  - name: calculator-factorial
+    version: 0.1.0
+    repository: http://charts.scranner.co.uk
+  - name: calculator-modulo
+    version: 0.1.0
+    repository: http://charts.scranner.co.uk
+  - name: calculator-multiply
+    version: 0.1.0
+    repository: http://charts.scranner.co.uk
+  - name: calculator-subtract
+    version: 0.1.0
+    repository: http://charts.scranner.co.uk

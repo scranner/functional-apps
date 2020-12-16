@@ -1,0 +1,27 @@
+# Default values for calculator-subtract.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount:
+  min: 1
+  max: 10
+
+image: jmccartney13/calculator-subtract
+predictiveScaling: true
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: subtract.calculator-project.qpc.hal.davecutting.uk
+      paths: ["/"]
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi

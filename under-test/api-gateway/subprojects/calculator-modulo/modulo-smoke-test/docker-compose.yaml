@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  api-under-test:
+    build:
+      context: ..
+    networks:
+      - api-smoke
+
+  smoke-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.smoke
+    environment:
+      - API_UNDER_TEST=api-under-test
+      - PUSH_RESULTS=false
+    networks:
+      - api-smoke
+
+  verification-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.smoke
+    environment:
+      - API_UNDER_TEST=modulo.calculator-project.qpc.hal.davecutting.uk
+      - PUSH_RESULTS=false
+    networks:
+      - api-smoke
+
+
+  monitoring-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.smoke
+    environment:
+      - API_UNDER_TEST=modulo.calculator-project.qpc.hal.davecutting.uk
+      - PUSH_RESULTS=true
+    networks:
+      - api-smoke
+
+networks:
+  api-smoke:
+    driver: bridge

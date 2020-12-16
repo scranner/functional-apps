@@ -1,0 +1,18 @@
+calculator-add:
+  ingress:
+    enabled: false
+calculator-api-facade:
+  ingress:
+    enabled: false
+calculator-factorial:
+  ingress:
+    enabled: false
+calculator-modulo:
+  ingress:
+    enabled: false
+calculator-multiply:
+  ingress:
+    enabled: false
+calculator-subtract:
+  ingress:
+    enabled: false

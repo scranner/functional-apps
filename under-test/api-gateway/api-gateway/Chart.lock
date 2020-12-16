@@ -1,0 +1,21 @@
+dependencies:
+- name: calculator-add
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: calculator-api-facade
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: calculator-factorial
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: calculator-modulo
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: calculator-multiply
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: calculator-subtract
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+digest: sha256:b7b7c69c998c5ad6a6f751fc8049f04d3846b8ceb5b0121d54bec66d020306ee
+generated: "2020-02-16T23:21:16.109527Z"

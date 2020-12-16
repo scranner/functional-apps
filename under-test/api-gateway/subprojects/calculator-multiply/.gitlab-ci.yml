@@ -1,0 +1,114 @@
+stages:
+  - build
+  - test
+  - push-image
+  - deploy
+  - verify-deploy
+
+build-image:
+  image: docker:19.03.1-dind
+  stage: build
+  script: docker build . -t $CI_REGISTRY_IMAGE
+  only:
+    - master
+  tags:
+    - dindrunner02
+  except:
+    - schedules
+
+lint:
+  image: golang:1.13.3
+  stage: test
+  allow_failure: true
+  script:
+    - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.21.0
+    - golangci-lint run
+  except:
+    - schedules
+
+test:
+  image: golang:1.13.3
+  stage: test
+  script:
+    - go test
+  except:
+    - schedules
+
+smoke-test:
+  stage: test
+  image: qmarketing/dind-docker-compose:18.09.5
+  tags:
+    - dindrunner02
+  script:
+    - cd multiply-smoke-test
+    - docker-compose down || true
+    - docker-compose build api-under-test && docker-compose up -d api-under-test
+    - docker-compose build smoke-test && docker-compose run smoke-test
+    - docker-compose down
+  except:
+    - schedules
+
+smoke-lint:
+  stage: test
+  image: node:13
+  script:
+    - cd multiply-smoke-test
+    - npm i
+    - npm run lint
+  except:
+    - schedules
+
+push-image:
+  image: docker:19.03.1-dind
+  stage: push-image
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE
+  only:
+    - master
+  tags:
+    - dindrunner02
+  except:
+    - schedules
+
+deploy:
+  image: dtzar/helm-kubectl
+  stage: deploy
+  script:
+    - mkdir /root/.kube && touch /root/.kube/config
+    - echo $KUBER_CONFIG | base64 -d > /root/.kube/config
+    - cd calculator-multiply
+    - helm upgrade multiply . --namespace calculator-project --wait
+  only:
+    - master
+  except:
+    - schedules
+
+verify-deploy:
+  stage: verify-deploy
+  image: qmarketing/dind-docker-compose:18.09.5
+  tags:
+    - dindrunner02
+  script:
+    - cd multiply-smoke-test
+    - docker-compose down || true
+    - sleep 5 && docker-compose build verification-test && docker-compose run verification-test
+    - docker-compose down
+  only:
+    - master
+  except:
+    - schedules
+
+timing-test:
+  stage: verify-deploy
+  image: qmarketing/dind-docker-compose:18.09.5
+  tags:
+    - dindrunner02
+  script:
+    - cd multiply-smoke-test
+    - docker-compose down || true
+    - docker-compose build monitoring-test && docker-compose run monitoring-test
+    - docker-compose down
+  only:
+    - schedules
+

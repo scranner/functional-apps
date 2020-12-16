@@ -1,0 +1,35 @@
+{{ if .Values.predictiveScaling }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "qis-crawler-queue-api.fullname" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "qis-crawler-queue-api.fullname" . }}
+  minReplicas: {{ .Values.replicaCount.min }}
+  maxReplicas: {{ .Values.replicaCount.max }}
+  metrics:
+    - type: Pods
+      pods:
+        metricName: predictive_cpu
+        targetAverageValue: 80
+{{ else }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "qis-crawler-queue-api.fullname" . }}
+spec:
+  minReplicas: {{ .Values.replicaCount.min }}
+  maxReplicas: {{ .Values.replicaCount.max }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "qis-crawler-queue-api.fullname" . }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 80
+{{ end }}

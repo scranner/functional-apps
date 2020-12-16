@@ -1,0 +1,28 @@
+# Default values for qis-crawler.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount:
+  max: 5
+  min: 1
+
+crawlDelay: 60
+
+predictiveScaling: true
+
+image: registry.hal.davecutting.uk/jmccartney13/qis-crawler
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi

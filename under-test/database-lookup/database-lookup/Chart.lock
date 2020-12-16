@@ -1,0 +1,24 @@
+dependencies:
+- name: qis-crawler
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: qis-crawler-queue-api
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: qis-index-ad-api
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: qis-index-ad-submission-api
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: qis-index-search-api
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: redis-search
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+- name: redis-queue
+  repository: http://charts.scranner.co.uk
+  version: 0.1.0
+digest: sha256:a4235ba9acfaa0403a3f4fc105eb4bf74e617db60b3b314ff9c2d65e48f4feaf
+generated: "2020-02-03T12:56:03.431849Z"
